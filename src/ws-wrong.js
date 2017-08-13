@@ -1,7 +1,8 @@
 var webserver = require('webserver');
 var server = webserver.create();
 
-var service = server.listen('127.0.0.1:9999', function(req, resp) {
+var service = server.listen('127.0.0.1:9999',
+function(req, resp) {
     console.log('receive req');
     var casper = require('casper').create({
         pageSetting: {
@@ -14,16 +15,19 @@ var service = server.listen('127.0.0.1:9999', function(req, resp) {
                 'https://www.zhihu.com/question/30001823?from=timeline&isappinstalled=0'];
     var url = urls[Math.floor(3 * Math.random())];
     casper.start(url);
-    casper.waitForText('高圆圆', function() {
+    casper.waitForText('高圆圆',
+    function() {
         var content = casper.page.content;
         resp.write(content);
         resp.close();
         console.log('response resp');
-    }, function() {
+    },
+    function() {
         resp.write('time out!');
         resp.close();
         console.log('wait timeout');
-    }, 3000);
+    },
+    3000);
 
     casper.run(function() {});
 });

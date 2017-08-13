@@ -17,6 +17,7 @@ page.onAlert = function(msg) {
     console.log(msg);
 };
 
-page.open('http://www.baidu.com', function() {
+page.open('http://www.baidu.com',
+function() {
     phantom.exit(0);
 });
