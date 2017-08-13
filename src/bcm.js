@@ -1,8 +1,8 @@
 var system = require('system');
 var os = system.os;
 if (os.name === 'windows') {
-  phantom.outputEncoding='gbk';
-  console.log("phantom.outputEncoding='gbk'");
+    phantom.outputEncoding='gbk';
+    console.log("phantom.outputEncoding='gbk'");
 }
 var casper = require('casper').create({
 		
@@ -23,16 +23,17 @@ casper.start('https://pbank.95559.com.cn/personbank/logon.jsp', {
 	});
 casper.then(function printHTML() {
 		this.echo(casper.page.content);
-		});
+	});
 casper.thenEvaluate(function removeMask() {
-	var elem = document.getElementById('certMask');
-	elem.parentNode.removeChild(elem);
-	var elem = document.getElementById('safeinputMask');
-	elem.parentNode.removeChild(elem);
-});
+	    var elem = document.getElementById('certMask');
+    	elem.parentNode.removeChild(elem);
+	    var elem = document.getElementById('safeinputMask');
+	    elem.parentNode.removeChild(elem);
+    });
 casper.then(function captureResults() {
 	this.capture('bcm1.png');
-	});
+});
+
 casper.run();
 
 
