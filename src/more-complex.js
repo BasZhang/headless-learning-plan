@@ -73,10 +73,9 @@ function(requestData, request) {
 casper.start(url,
 function() {});
 
-casper.thenEvaluate(function() {
-    casper.checkcode = document.querySelector('input[name="checkcode"]').value;
+var checkcode = casper.thenEvaluate(function() {
+    return document.querySelector('input[name="checkcode"]').value;
 
-    //this.fill('form[name="loginForm"]', {type:1, checkcode: 20170809010311, account: '107412515', password: '1234'}, true);
     //this.mouse.move('#drag');
     //this.mouse.down('#drag');
     //this.mouse.move(70,80);
@@ -88,9 +87,9 @@ casper.then(function() {
         method: 'post',
         data: {
             type: 1,
-            checkcode: casper.checkcode,
-            account: '107412515',
-            password: '1234'
+            checkcode: checkcode,
+    //        
+    //       
         },
         header: {
             Host: 'www.jsnt.lss.gov.cn:1002',
@@ -109,7 +108,7 @@ casper.then(function() {
 });
 casper.thenOpen('http://www.jsnt.lss.gov.cn:1002/query/loginvalidate.html', daga,
 function() {
-    this.echo(casper.checkcode);
+    this.echo(checkcode);
     this.echo(this.page.content);
 });
 casper.run(function() {
