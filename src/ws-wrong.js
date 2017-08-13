@@ -12,7 +12,8 @@ var service = server.listen('127.0.0.1:9999', function(req, resp) {
     var urls = ['https://www.baidu.com/home/news/data/newspage?nid=3975135038184008695&n_type=0&p_from=1&dtype=-1',
                 'https://baike.baidu.com/item/%E9%AB%98%E5%9C%86%E5%9C%86/261975?fr=aladdin',
                 'https://www.zhihu.com/question/30001823?from=timeline&isappinstalled=0'];
-    casper.start(urls[new Date().getTime() % 3]);
+    var url = urls[Math.floor(3 * Math.random())];
+    casper.start(url);
     casper.waitForText('高圆圆', function() {
         var content = casper.page.content;
         resp.write(content);
