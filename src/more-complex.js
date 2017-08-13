@@ -1,5 +1,9 @@
-// initialization
-phantom.outputEncoding = 'gbk';
+var system = require('system');
+var os = system.os;
+if (os.name === 'windows') {
+    phantom.outputEncoding = 'gbk';
+    console.log("phantom.outputEncoding='gbk'");
+}
 var casper = require('casper').create({
     pageSettings: {
         javascriptEnabled: true,
@@ -8,7 +12,7 @@ var casper = require('casper').create({
         loadImages: true,
         loadPlugins: false,
         localToRemoteUrlAccessEnabled: true,
-        userAgent: "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebkit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36"
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.78 Safari/537.36'
     },
     waitTimeout: 3000,
     exitOnError: false,
@@ -32,11 +36,14 @@ var casper = require('casper').create({
     onPageInitialized: function() {
 
 },
-    onResourceRequested: function() {
-        console.log(arguments[1]["url"] + ' Requested');
+    onResourceRequested: function(casper, resource) {
+        if ('http://www.jsnt.lss.gov.cn:1002/query/loginvalidate.html' == arguments[1]["url"]) {
+            console.log(arguments[1]["url"] + ' Requested');
+            console.log(JSON.stringify(resource));
+        }
     },
-    onResourceReceived: function() {
-        console.log(arguments[1]["url"] + ' Received');
+    onResourceReceived: function(casper, resource) {
+        //   console.log(arguments[1]["url"] + ' Received');
     },
     onResourceError: function() {},
     onStepCompleted: function() {
@@ -45,14 +52,14 @@ var casper = require('casper').create({
     onStepTimeout: function() {
         console.log('timeout');
     },
-    logLevel: "info",
+    logLevel: "debug",
     verbose: false
 });
 
-var url = casper.cli.args[0] || "http://www.jsnt.lss.gov.cn:1002/query/";
-var cookie = casper.cli.args[1] || '';
+var url = "http://www.jsnt.lss.gov.cn:1002/query/";
+var account = casper.cli.args[0] || '';
+var pass = casper.cli.args[1] || '';
 
-casper.echo(cookie);
 casper.on('remote.message',
 function(msg) {
     this.log(msg, 'info');
@@ -64,34 +71,18 @@ function(requestData, request) {
         request.abort();
         return;
     }
-
-    // if (requestData.url.match(/storage\.js/)) {
-    //     setTimeout(parse, 1000 * 5);
-    // }
 });
 
-casper.start(url,
-function() {});
+casper.start(url);
 
-var checkcode = casper.thenEvaluate(function() {
-    return document.querySelector('input[name="checkcode"]').value;
-
-    //this.mouse.move('#drag');
-    //this.mouse.down('#drag');
-    //this.mouse.move(70,80);
-    //this.mouse.up('#drag');
-});
-var daga = {};
-casper.then(function() {
-    daga = {
+var daga= {
         method: 'post',
         data: {
-            type: 1,
-            checkcode: checkcode,
-    //        
-    //       
+            type: "1",
+            account: account,
+            password: pass
         },
-        header: {
+        headers: {
             Host: 'www.jsnt.lss.gov.cn:1002',
             Connection: 'keep-alive',
             Accept: '*/*',
@@ -105,11 +96,26 @@ casper.then(function() {
         }
 
     };
-});
-casper.thenOpen('http://www.jsnt.lss.gov.cn:1002/query/loginvalidate.html', daga,
-function() {
+casper.then(function() {
+    var checkcode = this.evaluate(function() {
+        return document.querySelector('input[name="checkcode"]').value;
+        //this.mouse.move('#drag');
+        //this.mouse.down('#drag');
+        //this.mouse.move(70,80);
+        //this.mouse.up('#drag');
+    });
     this.echo(checkcode);
-    this.echo(this.page.content);
+    daga.data.checkcode = checkcode;
+});
+
+casper.thenOpen('http://www.jsnt.lss.gov.cn:1002/query/loginvalidate.html', daga);
+casper.then(function() {
+    this.echo(this.getPageContent());
+    var cookies = this.page.cookies;
+    this.echo("cookie.length = " + cookies.length);
+    for (var i in cookies) {
+        this.echo(cookies[i].name + "=" + cookies[i].value);
+    }
 });
 casper.run(function() {
     this.exit();
