@@ -109,10 +109,7 @@ var _paramPack1 = {
 casper.then(function getLoginInfo() {
     var checkcode = this.evaluate(function() {
         return document.querySelector('input[name="checkcode"]').value;
-        // this.mouse.move('#drag');
-        // this.mouse.down('#drag');
-        // this.mouse.move(70,80);
-        // this.mouse.up('#drag');
+        // TODO 模拟鼠标事件
     });
     this.echo(checkcode);
     _paramPack1.data.checkcode = checkcode;
@@ -135,6 +132,8 @@ var _paramPack2 = {
     }
 };
 
+var _paramPack3 = {};
+
 casper.then(function parseLoginParam() {
 
     var result = this.getPageContent().replace(/\['([^']*)'\]/g, "$1");
@@ -152,12 +151,10 @@ casper.then(function parseLoginParam() {
         _paramPack3.userid = res[1];
         _paramPack3.sessionid = res[2];
     } else {
-        this.log('errrrrrrrrrrrrr'. 'error');
+        this.log('errrrrrrrrrrrrr', 'error');
     }
 
 });
-
-var _paramPack3 = {};
 
 casper.then(function login() {
     var url = 'http://www.jsnt.lss.gov.cn:1002/query/index.html?userid=' + _paramPack3.userid + '&sessionid=' + _paramPack3.sessionid;
@@ -169,8 +166,10 @@ casper.then(function login() {
         // frame必须切换，否则不能找到selector
         this.page.switchToFrame('leftFrame');
 
+    	// 等待元素出现
         this.waitForSelector('#pNode1_sub1',
         function clickGrxxx() {
+        	// click点击按钮，发送查询请求
             this.click('#pNode1_sub1 a');
 
             this.then(function captureCx1() {
