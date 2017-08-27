@@ -3,7 +3,7 @@ var server = webserver.create();
 
 var service = server.listen('127.0.0.1:9999',
 function(req, resp) {
-    console.log('receive req');
+    console.log('receive req' + JSON.stringify(req));
     var casper = require('casper').create({
         pageSetting: {
             loadPlugin: false,
